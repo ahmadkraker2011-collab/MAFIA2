@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ABOHMID20 — مافيا</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3ece0;--card:#fffaf0;--ink:#1c1714;--mut:#7a6d60;--acc:#a3141f;--line:#dccfba;--ok:#2f7d4f;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e0c0d;--card:#1a1618;--ink:#f1e8da;--mut:#9a8e80;--acc:#d62839;--line:#2f2729;--ok:#4cc27f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e0c0d;--card:#1a1618;--ink:#f1e8da;--mut:#9a8e80;--acc:#d62839;--line:#2f2729;--ok:#4cc27f;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:Cairo,Tahoma,Arial,sans-serif;font-size:17px}
+.wrap{max-width:480px;margin:auto;padding:14px 16px 40px}
+header{text-align:center;padding:10px 0 14px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.logo{direction:ltr;font-weight:900;font-size:1.7rem;letter-spacing:4px;color:var(--acc)}
+.sub{color:var(--mut);font-size:.85rem}
+h2{margin:6px 0 10px;font-size:1.3rem}
+.mut{color:var(--mut);margin:6px 0}
+.warn{color:var(--acc);font-weight:700}
+.big{font-size:2.2rem;font-weight:900;text-align:center;margin:26px 0;word-break:break-word}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0}
+.card b.r{display:block;font-size:1.8rem;color:var(--acc);margin:4px 0}
+.row{display:flex;gap:8px}
+input{flex:1;min-width:0;font:inherit;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 14px}
+.btn{display:block;width:100%;margin-top:16px;background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700;padding:13px;font-size:1.05rem}
+.btn:disabled{opacity:.4}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.chip{display:inline-flex;gap:8px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:99px;padding:6px 12px}
+.chip b{cursor:pointer;color:var(--acc)}
+button.chip.on{background:var(--ok);color:#fff;border-color:var(--ok)}
+.st{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin:8px 0}
+.st span+span{display:flex;gap:8px;align-items:center}
+.st b{min-width:24px;text-align:center}
+.m{background:var(--acc);color:#fff;border-color:var(--acc)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.pl{padding:14px 8px;font-weight:700}
+.ex{font-size:.85rem;padding:6px 12px;margin:0 0 8px}
+.ck{display:inline-block;margin-inline-start:10px;font-size:1.1em;font-weight:900;color:var(--ok)}
+.ck.x{color:var(--acc)}
+.pl.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<button id="ex" class="ex" style="display:none" onclick="exitMenu()">☰ القائمة الرئيسية</button>
+<header><div class="logo">ABOHMID20</div><div class="sub">لعبة مافيا</div></header>
+<div id="app"></div>
+</div>
+<script>
+const RN={mayor:'العمدة',sniper:'القناص',doc:'الدكتور',det:'المحقق',kid:'ولد صالح',boss:'شيخ المافيا',sil:'مافيا التسكيت',maf:'مافيا',cit:'مواطن'};
+const RD={mayor:'بتقدر تكشف حالك وقت التصويت فيصير صوتك بـ٣.',sniper:'معك طلقة وحدة: بتقنص أو ما بتقنص. إذا قنصت مافيا بيطلع، وإذا لا بتطلع أنت ومين قنصته.',doc:'كل ليلة اختر مين بدك تحميه. إذا قتلوا نفس الشخص ما بيموت. بتقدر تحمي حالك بس مو مرتين ورا بعض.',det:'كل ليلة اختر شخص والراوي بيجاوبك إذا هو مافيا أو لا.',kid:'إذا طلعت بالتصويت عليك حصراً، بتاخد معك واحد.',boss:'أنت المسؤول عن القتل.',sil:'أنت المسؤول عن تسكيت لاعب.',maf:'أنت من المافيا.',cit:'ساعد المواطنين على كشف المافيا.'};
+const mk=b=>b?'<span class="ck x">✗</span>':'<span class="ck">✓</span>';
+const isM=r=>r=='boss'||r=='sil'||r=='maf';
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rnd=n=>{const a=new Uint32Array(1),lim=Math.floor(4294967296/n)*n;let x;do{crypto.getRandomValues(a);x=a[0]}while(x>=lim);return x%n};
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+const fresh=()=>({boss:1,sil:0,mayor:0,sniper:0,doc:0,det:0,kid:0});
+let S={v:'setup',names:[],cfg:fresh(),p:[],i:0,sel:null,pk:{},ord:[],k:0,vt:[],mr:false,mu:false,ex:null,tk:null,w:null,dead:[],sl:[],H:[],vl:[],vi:0};
+const go=v=>{S.v=v;R()};
+const al=()=>S.p.map((x,i)=>i).filter(i=>S.p[i].alive);
+const XL='☰ القائمة الرئيسية';
+function R(){document.getElementById('app').innerHTML=V[S.v]();const b=document.getElementById('ex');S.xc=0;clearTimeout(S.xt);b.textContent=XL;b.style.display=S.v=='setup'?'none':'';window.scrollTo(0,0)}
+function exitMenu(){const b=document.getElementById('ex');if(!S.xc){S.xc=1;b.textContent='متأكد؟ اضغط مرة ثانية';S.xt=setTimeout(()=>{S.xc=0;b.textContent=XL},3000);return}clearTimeout(S.xt);S.xc=0;S.sel=null;again()}
+function add(){const e=document.getElementById('nm'),n=e.value.trim();if(n&&!S.names.includes(n))S.names.push(n);R();document.getElementById('nm').focus()}
+function rm(i){S.names.splice(i,1);R()}
+function cf(k,d){S.cfg[k]=Math.max(0,S.cfg[k]+d);R()}
+function deal(){let a=[];for(const k in S.cfg)for(let j=0;j<S.cfg[k];j++)a.push(k);while(a.length<S.names.length)a.push('cit');a=shuffle(a);S.p=S.names.map((n,i)=>({n,role:a[i],alive:true,b:true}));S.m0=S.p.filter(x=>isM(x.role)).length;S.i=0;go('hA')}
+function nx(){S.i++;go(S.i>=S.p.length?'ready':'hA')}
+function startNight(){S.ord=al();S.k=0;S.pk={};S.sel=null;go('nS')}
+function toPick(){S.sp=rnd(al().length+1);go('nB')}
+function pick(i){S.sel=i;R()}
+function conf(){const w=S.ord[S.k],t=S.sel;S.pk[w]=t;if(S.p[w].role=='det'&&t>=0){S.dr=t;go('dR');return}nextN()}
+function nextN(){S.k++;S.sel=null;go(S.k>=S.ord.length?'toNar':'nA')}
+function win(){const m=al().filter(i=>isM(S.p[i].role)).length,c=al().length-m;return m==0?'cit':(c<=S.m0?'mafia':null)}
+function resolve(){
+ const P=S.p,A=S.ord,dead=new Set(),H=[],sl=[];
+ const rl=r=>A.filter(i=>P[i].role==r),pk=i=>S.pk[i]??-1;
+ const prot=new Set();rl('doc').forEach(i=>{const t=pk(i);if(t<0){P[i].ls=false;return}if(t===i&&P[i].ls){P[i].ls=false;H.push('الدكتور '+esc(P[i].n)+' حاول يحمي حاله مرتين ورا بعض، الحماية ما انحسبت');return}P[i].ls=(t===i);prot.add(t)});
+ const kr=rl('boss')[0]??rl('sil')[0]??rl('maf')[0];
+ if(kr!=null){const t=pk(kr);if(t>=0){if(prot.has(t))H.push('الدكتور أنقذ '+esc(P[t].n)+' من القتل');else{dead.add(t);H.push('المافيا قتلت '+esc(P[t].n))}}else H.push('المافيا ما قتلت أحداً')}
+ rl('sniper').forEach(i=>{const t=pk(i);if(t>=0&&P[i].b){P[i].b=false;dead.add(t);if(!isM(P[t].role))dead.add(i);H.push('القناص '+esc(P[i].n)+' قنص '+esc(P[t].n))}});
+ rl('sil').forEach(i=>{const t=pk(i);if(t>=0)sl.push(t)});
+ 
+ dead.forEach(i=>P[i].alive=false);
+ S.dead=[...dead];S.sl=sl.filter(t=>P[t].alive);S.H=H;go('sum')
+}
+function morning(){S.w=win();go(S.w?'end':'day')}
+function startVote(){S.vt=S.p.map(()=>0);S.sk=0;S.mr=false;S.vl=al();S.vi=0;S.sel=null;go(S.vl.some(i=>S.p[i].role=='mayor')?'vMay':'vA')}
+function mayor(b){S.mr=b;S.vi=0;S.sel=null;go('vA')}
+function vconf(){const v=S.vl[S.vi],w=(S.mr&&S.p[v].role=='mayor')?3:1;if(S.sel===-1)S.sk+=w;else S.vt[S.sel]+=w;S.vi++;S.sel=null;go(S.vi>=S.vl.length?'vR':'vA')}
+function fin(){const a=al(),mx=Math.max(...a.map(i=>S.vt[i])),w=a.filter(i=>S.vt[i]==mx);if(mx==0||w.length>1||S.sk>=mx)return go('tie');
+ S.ex=w[0];S.tk=null;S.p[S.ex].alive=false;go(S.p[S.ex].role=='kid'?'kid':'exec')}
+function kidOk(){if(S.sel>=0){S.tk=S.sel;S.p[S.sel].alive=false}S.sel=null;go('exec')}
+function afterExec(){S.w=win();S.w?go('end'):startNight()}
+function again(){S.cfg=fresh();go('setup')}
+const grid=(sk=true,pos=-1)=>{const b=al().map(i=>`<button class="pl ${S.sel===i?'on':''}" onclick="pick(${i})">${esc(S.p[i].n)}</button>`);if(sk){const k=`<button class="pl ${S.sel===-1?'on':''}" onclick="pick(-1)">تخطي (Skip)</button>`;b.splice(pos<0?b.length:Math.min(pos,b.length),0,k)}return `<div class="grid">${b.join('')}</div>`};
+const rc=i=>`<div class="card">${esc(S.p[i].n)} — كان <b class="r">${RN[S.p[i].role]}</b></div>`;
+const V={
+setup:()=>`<h2>اللاعبون</h2><div class="row"><input id="nm" placeholder="اكتب اسم لاعب" onkeydown="if(event.key=='Enter')add()"><button onclick="add()">إضافة</button></div><div class="chips">${S.names.map((n,i)=>`<span class="chip">${esc(n)} <b onclick="rm(${i})">×</b></span>`).join('')}</div><p class="mut">${S.names.length} لاعب (الحد الأدنى ٥)</p><button class="btn" ${S.names.length<5?'disabled':''} onclick="go('roles')">التالي: اختيار الأدوار</button>`,
+roles:()=>{const n=S.names.length,u=Object.values(S.cfg).reduce((a,b)=>a+b,0),m=S.cfg.boss+S.cfg.sil;
+ return `<h2>اختر الأدوار</h2><p class="mut">الباقي مواطنين: <b>${Math.max(0,n-u)}</b> من ${n}</p>${Object.keys(S.cfg).map(k=>`<div class="st"><span>${RN[k]}</span><span><button onclick="cf('${k}',-1)">−</button><b>${S.cfg[k]}</b><button onclick="cf('${k}',1)">+</button></span></div>`).join('')}${u>n?'<p class="warn">الأدوار أكتر من اللاعبين</p>':''}${m<1?'<p class="warn">لازم يكون في مافيا وحدة على الأقل</p>':''}<button class="btn" ${u>n||m<1?'disabled':''} onclick="deal()">وزّع الأدوار عشوائياً</button><button class="btn" style="background:none;color:var(--ink);border-color:var(--line)" onclick="go('setup')">رجوع</button>`},
+hA:()=>`<p class="mut" style="text-align:center">سلّم الموبايل إلى</p><div class="big">${esc(S.p[S.i].n)}</div><button class="btn" onclick="go('hB')">التالي</button>`,
+hB:()=>{const p=S.p[S.i],f=S.p.filter((x,j)=>j!=S.i&&isM(x.role));
+ return `<p class="mut">أنت ${esc(p.n)}</p><div class="card">دورك<b class="r">${RN[p.role]}</b><div>${RD[p.role]}</div>${isM(p.role)&&f.length?`<p>رفقاؤك: ${f.map(x=>esc(x.n)+' ('+RN[x.role]+')').join('، ')}</p>`:''}</div><button class="btn" onclick="nx()">التالي</button>`},
+ready:()=>`<h2>تم توزيع الأدوار</h2><p class="mut">كل لاعب عرف دوره. جاهزين للّيل؟</p><button class="btn" onclick="startNight()">ابدأ الليل 🌙</button>`,
+nS:()=>`<h2>الليل 🌙</h2><p class="mut">قل للجميع: ناموا. الموبايل رح يلف على كل اللاعبين، وكل واحد بيختار لاعباً.</p><button class="btn" onclick="go('nA')">ابدأ الدوران</button>`,
+nA:()=>`<p class="mut" style="text-align:center">الدور على</p><div class="big">${esc(S.p[S.ord[S.k]].n)}</div><button class="btn" onclick="toPick()">التالي</button>`,
+nB:()=>`<h2>اختر لاعباً</h2>${grid(true,S.sp)}<button class="btn" ${S.sel===null?'disabled':''} onclick="conf()">تأكيد</button>`,
+dR:()=>`<p class="mut" style="text-align:center">${esc(S.p[S.ord[S.k]].n)}</p><div class="card" style="text-align:center">سألت عن<div class="big" style="margin:12px 0">${esc(S.p[S.dr].n)}${mk(isM(S.p[S.dr].role))}</div></div><button class="btn" onclick="nextN()">التالي</button>`,
+toNar:()=>`<h2>خلص الليل</h2><div class="big">عطي الموبايل للراوي</div><button class="btn" onclick="resolve()">أنا الراوي</button>`,
+sum:()=>`<h2>ملخص الليل</h2><p class="warn">للراوي فقط — لا تُري الشاشة للاعبين</p><div class="card">${S.H.length?S.H.map(h=>`<p>• ${h}</p>`).join(''):'<p>ما صار شي</p>'}${S.sl.length?`<p>• مسكّت: ${S.sl.map(t=>esc(S.p[t].n)).join('، ')}</p>`:''}</div><button class="btn" onclick="morning()">طلع الصباح ☀️</button>`,
+day:()=>`<h2>طلع الصباح ☀️</h2>${S.dead.length?S.dead.map(rc).join(''):'<div class="card">مرّت الليلة بسلام، ما حدا مات.</div>'}${S.sl.length?`<div class="card">🤐 ممنوع يحكي اليوم: <b>${S.sl.map(t=>esc(S.p[t].n)).join('، ')}</b></div>`:''}<p class="mut">الأحياء: ${al().map(i=>esc(S.p[i].n)).join('، ')}</p><button class="btn" onclick="startVote()">بدء التصويت</button>`,
+vMay:()=>`<h2>التصويت</h2><div class="big">هل العمدة كشف ورقته؟</div><button class="btn" onclick="mayor(true)">نعم</button><button class="btn" style="background:none;color:var(--ink);border-color:var(--line)" onclick="mayor(false)">لا</button>`,
+vA:()=>{const v=S.vl[S.vi];return `<h2>${esc(S.p[v].n)} اختار واحد</h2>${S.mr&&S.p[v].role=='mayor'?'<p class="mut">صوت العمدة بـ٣</p>':''}${grid(true)}<button class="btn" ${S.sel===null?'disabled':''} onclick="vconf()">تأكيد</button>`},
+vR:()=>`<h2>نتيجة التصويت</h2>${al().map(i=>`<div class="st"><span>${esc(S.p[i].n)}</span><b>${S.vt[i]}</b></div>`).join('')}<div class="st"><span>تخطي (Skip)</span><b>${S.sk}</b></div><button class="btn" onclick="fin()">حسم التصويت</button>`,
+tie:()=>`<h2>تعادل</h2><p class="mut">تعادل أو تخطي أو ما في أصوات، ما حدا انعدم.</p><button class="btn" onclick="startNight()">الليل 🌙</button>`,
+kid:()=>`<h2>ولد صالح انكشف</h2>${rc(S.ex)}<p class="mut">اختر مين بياخد معه</p>${grid()}<button class="btn" ${S.sel===null?'disabled':''} onclick="kidOk()">تأكيد</button>`,
+exec:()=>`<h2>تم الإعدام</h2>${rc(S.ex)}${S.tk!=null?`<p class="mut">وأخد معه:</p>${rc(S.tk)}`:''}<button class="btn" onclick="afterExec()">التالي</button>`,
+end:()=>`<h2>${S.w=='mafia'?'فازت المافيا 🕶️':'فاز المواطنون 🏆'}</h2>${S.p.map(p=>`<div class="st"><span>${esc(p.n)}</span><span>${RN[p.role]}${p.alive?'':' 💀'}</span></div>`).join('')}<button class="btn" onclick="again()">لعبة جديدة</button>`
+};
+R();
+</script>
+</body>
+</html>
